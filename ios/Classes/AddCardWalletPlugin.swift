@@ -7,6 +7,7 @@ import WatchConnectivity
 import Flutter
 import UIKit
 
+@available(iOS 13.4, *)
 public class SwiftWalletCardPlugin: NSObject, FlutterPlugin {
   public static func register(with registrar: FlutterPluginRegistrar) {
     let channel = FlutterMethodChannel(name: "wallet_card", binaryMessenger: registrar.messenger())
@@ -42,6 +43,7 @@ public class SwiftWalletCardPlugin: NSObject, FlutterPlugin {
 
     private func canAddPass(accountIdentifier: String, suffix: String) -> Bool {
         let canAddPass = PKAddPaymentPassViewController.canAddPaymentPass()
+        
         let passes = PKPassLibrary().passes(of: .secureElement)
         print(passes)
         print(passes.count)
@@ -49,9 +51,9 @@ public class SwiftWalletCardPlugin: NSObject, FlutterPlugin {
         var canAddPassPhone = true
         for pass in passes {
             print(pass)
-            print(pass.secureElementPass)
-            print(pass.secureElementPass?.deviceAccountNumberSuffix)
-            print(pass.secureElementPass?.primaryAccountNumberSuffix)
+//            print(pass.secureElementPass)
+//            print(pass.secureElementPass?.deviceAccountNumberSuffix)
+//            print(pass.secureElementPass?.primaryAccountNumberSuffix)
             print(suffix)
             if (pass.secureElementPass?.primaryAccountNumberSuffix == suffix) {
                 canAddPassPhone = false
@@ -165,7 +167,11 @@ class PKAddPassButtonNativeView: NSObject, FlutterPlatformView, PKAddPaymentPass
         configuration.paymentNetwork = PKPaymentNetwork.masterCard
 
         guard let addPassViewController = PKAddPaymentPassViewController(requestConfiguration: configuration, delegate: self),
-              let rootVC = UIApplication.shared.keyWindow?.rootViewController else {
+              let rootVC = UIApplication.shared.connectedScenes
+            .filter({$0.activationState == .foregroundActive})
+            .compactMap({$0 as? UIWindowScene})
+            .first?.windows
+            .filter({$0.isKeyWindow}).first?.rootViewController else {
             return
         }
 
@@ -179,7 +185,7 @@ class PKAddPassButtonNativeView: NSObject, FlutterPlatformView, PKAddPaymentPass
         completionHandler handler: @escaping (PKAddPaymentPassRequest) -> Void) {
 
         var certifs: [String] = []
-        for certificate in certificates { 
+        for certificate in certificates {
             certifs.append(certificate.base64EncodedString())
         }
       
