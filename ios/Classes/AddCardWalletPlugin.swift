@@ -1,5 +1,7 @@
 import Flutter
+import PassKit
 import UIKit
+
 
 class PKAddPassButtonNativeViewFactory: NSObject, FlutterPlatformViewFactory {
     private var messenger: FlutterBinaryMessenger
