@@ -164,7 +164,7 @@ class PKAddPassButtonNativeView: NSObject, FlutterPlatformView, PKAddPaymentPass
         configuration.cardholderName = _cardHolderName
         configuration.primaryAccountSuffix = _cardSuffix
         configuration.primaryAccountIdentifier = _accountIdentifier
-        configuration.paymentNetwork = PKPaymentNetwork.masterCard
+        configuration.paymentNetwork = PKPaymentNetwork.visa
 
         guard let addPassViewController = PKAddPaymentPassViewController(requestConfiguration: configuration, delegate: self),
               let rootVC = UIApplication.shared.connectedScenes
