@@ -48,7 +48,7 @@ class PKAddPassButtonNativeView: NSObject, FlutterPlatformView {
         _view = UIView()
        // _pass = args["pass"] as! FlutterStandardTypedData
         _width = args["width"] as? CGFloat ?? 140
-        _height = args["height"] as? CGFloat ?? 30
+        _height = args["height"] as? CGFloat ?? 48
         _key = args["key"] as! String
         _channel = channel
         super.init()
@@ -60,35 +60,36 @@ class PKAddPassButtonNativeView: NSObject, FlutterPlatformView {
     }
 
     func createAddPassButton() {
-        let passButton = PKAddPassButton(addPassButtonStyle: PKAddPassButtonStyle.black)
+        let passButton = PKAddPassButton(addPassButtonStyle: .blackOutline)
         passButton.frame = CGRect(x: 0, y: 0, width: _width, height: _height)
-        passButton.addTarget(self, action: #selector(passButtonAction), for: .touchUpInside)
+        passButton.addTarget(self, action: #selector(addCardToAppleWallet), for: .touchUpInside)
         _view.addSubview(passButton)
     }
 
-    @objc func passButtonAction() {
-        // var newPass: PKPass
-        // do {
-        //     newPass = try PKPass(data: _pass.data)
-        // } catch {
-        //     print("No valid Pass data passed")
-        //     return
-        // }
-        // guard let addPassViewController = PKAddPassesViewController(pass: newPass) else {
-        //     print("View controller messed up")
-        //     return
-        // }
+    @objc func addCardToAppleWallet() {
+      guard AppleWallet.isPassKitAvailable() else {
+        self.alert(message: "InApp enrollment is not available for this device")
+        return
+       }
 
-        // guard let rootVC = UIApplication.shared.keyWindow?.rootViewController else {
-        //     print("Root VC unavailable")
-        //     return
-        // }
-        // rootVC.present(addPassViewController, animated: true)
-        _invokeAddButtonPressed()
+      initEnrollmentProcess()
     }
     
     func _invokeAddButtonPressed() {
-       // _channel.invokeMethod(AddToWalletEvent.addButtonPressed.rawValue, arguments: ["key": _key])
+       guard let configuration = PKAddPaymentPassRequestConfiguration(encryptionScheme: .ECC_V2) else {
+        self.alert(message: "InApp enrollment configuraton failed")
+        return
+      }
+      
+      configuration.cardholderName = "Mauricio"
+      configuration.primaryAccountSuffix = "4334"
+      configuration.paymentNetwork = .visa // or visa, Amex, .mastercart
+      
+      guard let enrollViewController = PKAddPaymentPassViewController(requestConfiguration: configuration, delegate: self) else {
+          self.alert(message: "InApp enrollment controller configuration failed")
+          return
+      }
+      present(enrollViewController, animated: true, completion: nil)
     }
 }
 
@@ -107,9 +108,8 @@ public class AddCardWalletPlugin: NSObject, FlutterPlugin {
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
     switch call.method {
-    case "buttonAddCardWalletApple":
-   
-      break
+    // case "buttonAddCardWalletApple":
+    //   break
     default:
       result(FlutterMethodNotImplemented)
     }

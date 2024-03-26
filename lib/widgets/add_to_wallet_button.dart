@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:add_card_wallet/add_card_wallet.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -32,18 +31,6 @@ class _AddToWalletButtonState extends State<AddToWalletButton> {
         'height': widget.height,
         'key': widget._id,
       };
-
-  @override
-  void initState() {
-    super.initState();
-    AddCardWallet().addHandler(widget._id, (_) => widget.onPressed?.call());
-  }
-
-  @override
-  void dispose() {
-    AddCardWallet().removeHandler(widget._id);
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
