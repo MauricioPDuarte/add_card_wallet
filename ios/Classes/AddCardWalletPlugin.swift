@@ -8,10 +8,10 @@ import Flutter
 import UIKit
 
 @available(iOS 13.4, *)
-public class SwiftWalletCardPlugin: NSObject, FlutterPlugin {
+public class AddCardWalletPlugin: NSObject, FlutterPlugin {
   public static func register(with registrar: FlutterPluginRegistrar) {
     let channel = FlutterMethodChannel(name: "wallet_card", binaryMessenger: registrar.messenger())
-    let instance = SwiftWalletCardPlugin()
+    let instance = AddCardWalletPlugin()
     registrar.addMethodCallDelegate(instance, channel: channel)
 
     let factory = PKAddPassButtonNativeViewFactory(messenger: registrar.messenger(), channel: channel)
