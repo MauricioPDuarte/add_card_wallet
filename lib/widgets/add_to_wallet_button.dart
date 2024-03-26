@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:add_card_wallet/add_card_wallet.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,19 +11,34 @@ class AddToWalletButton extends StatefulWidget {
 
   final double width;
   final double height;
+  final String? cardHolderName;
+  final String? cardSuffix;
+  final String? accountIdentifier;
   final Widget? unsupportedPlatformChild;
-  final FutureOr<void> Function()? onPressed;
+  final void Function()? onPressed;
+  final FutureOr<String?> Function(
+    List<Object?>,
+    String,
+    String,
+  )? loadCard;
+  final void Function(String)? addedCard;
   final String _id = const Uuid().v4();
 
-  AddToWalletButton(
-      {super.key,
-      required this.width,
-      required this.height,
-      this.onPressed,
-      this.unsupportedPlatformChild});
+  AddToWalletButton({
+    super.key,
+    required this.width,
+    required this.height,
+    required this.cardHolderName,
+    required this.cardSuffix,
+    required this.accountIdentifier,
+    this.onPressed,
+    this.loadCard,
+    this.addedCard,
+    this.unsupportedPlatformChild,
+  });
 
   @override
-  _AddToWalletButtonState createState() => _AddToWalletButtonState();
+  State<AddToWalletButton> createState() => _AddToWalletButtonState();
 }
 
 class _AddToWalletButtonState extends State<AddToWalletButton> {
@@ -30,14 +46,76 @@ class _AddToWalletButtonState extends State<AddToWalletButton> {
         'width': widget.width,
         'height': widget.height,
         'key': widget._id,
+        'cardHolderName': widget.cardHolderName ?? '',
+        'cardSuffix': widget.cardSuffix ?? '',
+        'accountIdentifier': widget.accountIdentifier ?? '',
       };
 
   @override
+  void initState() {
+    super.initState();
+    AddCardWallet().addHandler(widget._id, (call) {
+      switch (call.method) {
+        case "add_payment_pass":
+          return getPass(call);
+        case "add_payment_pass_success":
+          return passSuccess(call);
+        default:
+          return null;
+      }
+    });
+  }
+
+  Future<String?> getPass(MethodCall call) async {
+    var result = await widget.loadCard?.call(
+      call.arguments["certificates"] as List<Object?>,
+      call.arguments["nonce"] as String,
+      call.arguments["nonceSignature"] as String,
+    );
+
+    return result;
+  }
+
+  Future<void> passSuccess(MethodCall call) async {
+    String? primaryAccountIdentifier =
+        call.arguments["primaryAccountIdentifier"];
+    widget.addedCard?.call(primaryAccountIdentifier ?? '');
+  }
+
+  @override
+  void dispose() {
+    AddCardWallet().removeHandler(widget._id);
+    super.dispose();
+  }
+
+  Future<Object?>? canAddPass() async {
+    var result = await AddCardWallet().canAddPass({
+      "accountIdentifier": widget.accountIdentifier ?? "",
+      "cardSuffix": widget.cardSuffix ?? "",
+    });
+
+    if (result == false) {
+      widget.addedCard!('');
+    }
+
+    return result;
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: widget.width,
-      height: widget.height,
-      child: platformWidget(context),
+    return FutureBuilder(
+      future: canAddPass(),
+      builder: (context, snapshot) {
+        if (snapshot.data == true) {
+          return SizedBox(
+            width: widget.width,
+            height: widget.height,
+            child: platformWidget(context),
+          );
+        }
+
+        return Container();
+      },
     );
   }
 
@@ -49,6 +127,14 @@ class _AddToWalletButtonState extends State<AddToWalletButton> {
           layoutDirection: Directionality.of(context),
           creationParams: uiKitCreationParams,
           creationParamsCodec: const StandardMessageCodec(),
+        );
+      case TargetPlatform.android:
+        return InkWell(
+          onTap: widget.onPressed,
+          child: Image.asset(
+            'packages/wallet_card/assets/add_wallet.png',
+            width: widget.width,
+          ),
         );
       default:
         if (widget.unsupportedPlatformChild == null) {
