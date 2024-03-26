@@ -94,6 +94,9 @@ public class AddCardWalletPlugin: NSObject, FlutterPlugin {
   public static func register(with registrar: FlutterPluginRegistrar) {
     let channel = FlutterMethodChannel(name: "method/add_card_wallet", binaryMessenger: registrar.messenger())
     let instance = AddCardWalletPlugin()
+
+       let factory = PKAddPassButtonNativeViewFactory(messenger: registrar.messenger(), channel: channel)
+      registrar.register(factory, withId: "PKAddPassButton")
     
 
 
@@ -103,8 +106,7 @@ public class AddCardWalletPlugin: NSObject, FlutterPlugin {
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
     switch call.method {
     case "buttonAddCardWalletApple":
-      let factory = PKAddPassButtonNativeViewFactory(messenger: registrar.messenger(), channel: channel)
-      registrar.register(factory, withId: "PKAddPassButton")
+   
       break
     default:
       result(FlutterMethodNotImplemented)
