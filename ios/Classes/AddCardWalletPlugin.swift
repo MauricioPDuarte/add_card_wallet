@@ -37,7 +37,7 @@ class PKAddPassButtonNativeView: NSObject, FlutterPlatformView {
     private var _height: CGFloat
     private var _key: String
     private var _channel: FlutterMethodChannel
-    var topController : UIViewController?
+    private var topController : UIViewController?
 
     init(
         frame: CGRect,
@@ -73,7 +73,7 @@ class PKAddPassButtonNativeView: NSObject, FlutterPlatformView {
         return
        }
 
-      self.initEnrollmentProcess()
+      initEnrollmentProcess()
     }
     
     func initEnrollmentProcess() {
