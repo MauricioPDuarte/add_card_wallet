@@ -68,16 +68,16 @@ class PKAddPassButtonNativeView: NSObject, FlutterPlatformView {
 
     @objc func addCardToAppleWallet() {
       guard AppleWallet.isPassKitAvailable() else {
-        self.alert(message: "InApp enrollment is not available for this device")
+        //self.alert(message: "InApp enrollment is not available for this device")
         return
        }
 
-      initEnrollmentProcess()
+      self.initEnrollmentProcess()
     }
     
     func _invokeAddButtonPressed() {
        guard let configuration = PKAddPaymentPassRequestConfiguration(encryptionScheme: .ECC_V2) else {
-        self.alert(message: "InApp enrollment configuraton failed")
+      //  self.alert(message: "InApp enrollment configuraton failed")
         return
       }
       
@@ -86,7 +86,7 @@ class PKAddPassButtonNativeView: NSObject, FlutterPlatformView {
       configuration.paymentNetwork = .visa // or visa, Amex, .mastercart
       
       guard let enrollViewController = PKAddPaymentPassViewController(requestConfiguration: configuration, delegate: self) else {
-          self.alert(message: "InApp enrollment controller configuration failed")
+        //  self.alert(message: "InApp enrollment controller configuration failed")
           return
       }
       present(enrollViewController, animated: true, completion: nil)
