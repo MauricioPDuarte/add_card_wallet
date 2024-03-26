@@ -37,6 +37,7 @@ class PKAddPassButtonNativeView: NSObject, FlutterPlatformView {
     private var _height: CGFloat
     private var _key: String
     private var _channel: FlutterMethodChannel
+    var topController : UIViewController?
 
     init(
         frame: CGRect,
@@ -82,7 +83,7 @@ class PKAddPassButtonNativeView: NSObject, FlutterPlatformView {
       }
       
       configuration.cardholderName = "Mauricio"
-      configuration.primaryAccountSuffix = 4334
+      configuration.primaryAccountSuffix = "4334"
       configuration.paymentNetwork = .visa // or visa, Amex, .mastercart
       
       guard let enrollViewController = PKAddPaymentPassViewController(requestConfiguration: configuration, delegate: self) else {
@@ -111,7 +112,7 @@ public class AddCardWalletPlugin: NSObject, FlutterPlugin {
     let channel = FlutterMethodChannel(name: "method/add_card_wallet", binaryMessenger: registrar.messenger())
     let instance = AddCardWalletPlugin()
 
-       let factory = PKAddPassButtonNativeViewFactory(messenger: registrar.messenger(), channel: channel)
+      let factory = PKAddPassButtonNativeViewFactory(messenger: registrar.messenger(), channel: channel)
       registrar.register(factory, withId: "PKAddPassButton")
     
 
