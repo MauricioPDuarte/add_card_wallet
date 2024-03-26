@@ -30,7 +30,7 @@ class PKAddPassButtonNativeViewFactory: NSObject, FlutterPlatformViewFactory {
     }
 }
 
-class PKAddPassButtonNativeView: NSObject, FlutterPlatformView {
+class PKAddPassButtonNativeView: NSObject, FlutterPlatformView, PKAddPaymentPassViewControllerDelegate {
     private var _view: UIView
    // private var _pass: FlutterStandardTypedData
     private var _width: CGFloat
