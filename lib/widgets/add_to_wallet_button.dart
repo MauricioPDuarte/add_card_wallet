@@ -9,7 +9,6 @@ import 'package:uuid/uuid.dart';
 class AddToWalletButton extends StatefulWidget {
   static const viewType = 'PKAddPassButton';
 
-  final List<int> pkPass;
   final double width;
   final double height;
   final Widget? unsupportedPlatformChild;
@@ -18,7 +17,6 @@ class AddToWalletButton extends StatefulWidget {
 
   AddToWalletButton(
       {super.key,
-      required this.pkPass,
       required this.width,
       required this.height,
       this.onPressed,
@@ -32,7 +30,6 @@ class _AddToWalletButtonState extends State<AddToWalletButton> {
   get uiKitCreationParams => {
         'width': widget.width,
         'height': widget.height,
-        'pass': widget.pkPass,
         'key': widget._id,
       };
 
@@ -50,7 +47,7 @@ class _AddToWalletButtonState extends State<AddToWalletButton> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: widget.width,
       height: widget.height,
       child: platformWidget(context),
